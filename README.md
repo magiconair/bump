@@ -5,6 +5,14 @@
 It parses all git tags for semantic version numbers, sorts
 them and provides operations on them.
 
+## Install
+
+```
+go get -u github.com/magiconair/bump
+```
+
+## Usage
+
 ```
 # print the current version number (highest tag)
 bump cur
@@ -21,10 +29,10 @@ bump next minor
 bump next patch 
 
 # tag with the next version number
-bump bump 
+bump tag 
 
 # tag with the next major/minor/patch version number
-bump bump major 
-bump bump minor 
-bump bump patch
+bump tag major 
+bump tag minor 
+bump tag patch
 ```
