@@ -1,0 +1,8 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{"path":"github.com/urfave/cli","checksumSHA1":"9/2qvuFPQxW7ZXzQSOYwqZb5cNg=","revision":"8e01ec4cd3e2d84ab2fe90d8210528ffbb06d8ff","revisionTime":"2018-02-26T03:02:53Z"}
+	],
+	"rootPath": "github.com/magiconair/version"
+}
