@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-var version = "1.1"
+var version = "1.1.1"
 
 var errNoVersion = errors.New("no version")
 
