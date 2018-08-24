@@ -10,6 +10,8 @@ import (
 	"github.com/urfave/cli"
 )
 
+var version = "1.1"
+
 var errNoVersion = errors.New("no version")
 
 func main() {
@@ -86,7 +88,9 @@ func main() {
 			Usage: "tag with next version",
 			Action: func(c *cli.Context) error {
 				v := cur.Bump()
-				git.Tag(v)
+				if err := git.Tag(v); err != nil {
+					log.Fatal(err)
+				}
 				log.Print(v)
 				return nil
 			},
@@ -96,7 +100,9 @@ func main() {
 					Usage: "tag with next major version",
 					Action: func(c *cli.Context) error {
 						v := cur.BumpMajor()
-						git.Tag(v)
+						if err := git.Tag(v); err != nil {
+							log.Fatal(err)
+						}
 						log.Print(v)
 						return nil
 					},
@@ -106,7 +112,9 @@ func main() {
 					Usage: "tag with next minor version",
 					Action: func(c *cli.Context) error {
 						v := cur.BumpMinor()
-						git.Tag(v)
+						if err := git.Tag(v); err != nil {
+							log.Fatal(err)
+						}
 						log.Print(v)
 						return nil
 					},
@@ -116,7 +124,9 @@ func main() {
 					Usage: "tag with next patch version",
 					Action: func(c *cli.Context) error {
 						v := cur.BumpPatch()
-						git.Tag(v)
+						if err := git.Tag(v); err != nil {
+							log.Fatal(err)
+						}
 						log.Print(v)
 						return nil
 					},
