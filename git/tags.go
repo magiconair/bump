@@ -29,6 +29,16 @@ func Tags() (version.Versions, error) {
 }
 
 func Tag(v *version.Version) error {
-	cmd := exec.Command("git", "tag", "-s", v.String(), "-m", v.String())
-	return cmd.Run()
+	if err := signedTag(v); err != nil {
+		return annotatedTag(v)
+	}
+	return nil
+}
+
+func annotatedTag(v *version.Version) error {
+	return exec.Command("git", "tag", "-a", v.String(), "-m", v.String()).Run()
+}
+
+func signedTag(v *version.Version) error {
+	return exec.Command("git", "tag", "-s", v.String(), "-m", v.String()).Run()
 }
