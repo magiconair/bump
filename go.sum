@@ -1,0 +1,4 @@
+github.com/magiconair/bump v1.0.0 h1:pxPHLfcxS3AQO6WKpotvVzOxQtHYMPLrnsNAs2usAlA=
+github.com/magiconair/bump v1.0.0/go.mod h1:8xm8izMCZL6MKFrH+wWboVadFG6DL6eKtOdNI0jfBOc=
+github.com/urfave/cli v0.0.0-20180226030253-8e01ec4cd3e2 h1:98aNRvvwi7jK4ObVo/OnEKs9hw1bZ8JQNpwlB21ILD0=
+github.com/urfave/cli v0.0.0-20180226030253-8e01ec4cd3e2/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
