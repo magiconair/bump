@@ -133,6 +133,14 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:  "version",
+			Usage: "print bump version",
+			Action: func(c *cli.Context) error {
+				fmt.Println(version)
+				return nil
+			},
+		},
 	}
 
 	if err = app.Run(os.Args); err != nil {
