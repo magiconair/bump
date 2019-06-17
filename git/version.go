@@ -1,4 +1,4 @@
-package version
+package git
 
 import (
 	"bufio"
@@ -17,27 +17,14 @@ type Version struct {
 	Extra  string
 }
 
-type Versions []*Version
-
-func (v Versions) Len() int      { return len(v) }
-func (v Versions) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
-func (v Versions) Less(i, j int) bool {
-	a, b := v[i].Ints(), v[j].Ints()
-
-	return a[0] < b[0] ||
-		a[0] == b[0] && a[1] < b[1] ||
-		a[0] == b[0] && a[1] == b[1] && a[2] < b[2] ||
-		a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && v[i].Extra < v[j].Extra
-}
-
 var re = regexp.MustCompile(`(v)?([0-9]+)\.([0-9]+)(\.([0-9]+))?(-(.*))?`)
 
-func Read(r io.Reader) (Versions, error) {
-	var vv Versions
+func Read(r io.Reader) ([]Version, error) {
+	var vv byVersion
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		v, err := Parse(sc.Text())
-		if v == nil || err != nil {
+		if v.IsZero() || err != nil {
 			continue
 		}
 		vv = append(vv, v)
@@ -45,24 +32,24 @@ func Read(r io.Reader) (Versions, error) {
 	if err := sc.Err(); err != nil {
 		return nil, err
 	}
-	sort.Sort(vv)
+	sort.Sort(byVersion(vv))
 	return vv, nil
 }
 
-func ParseAll(s []string) (Versions, error) {
-	var vv Versions
+func ParseAll(s []string) ([]Version, error) {
+	var vv byVersion
 	for _, x := range s {
 		v, err := Parse(x)
-		if v == nil || err != nil {
+		if v.IsZero() || err != nil {
 			continue
 		}
 		vv = append(vv, v)
 	}
-	sort.Sort(vv)
+	sort.Sort(byVersion(vv))
 	return vv, nil
 }
 
-func Parse(s string) (*Version, error) {
+func Parse(s string) (Version, error) {
 	var err error
 	atoi := func(s string) int {
 		if s == "" || err != nil {
@@ -78,7 +65,7 @@ func Parse(s string) (*Version, error) {
 
 	m := re.FindStringSubmatch(s)
 	if m == nil {
-		return nil, nil
+		return Version{}, nil
 	}
 
 	prefix := m[1]
@@ -87,10 +74,10 @@ func Parse(s string) (*Version, error) {
 	patch := atoi(m[5])
 	extra := m[7]
 	if err != nil {
-		return nil, err
+		return Version{}, err
 	}
 
-	return &Version{
+	return Version{
 		Prefix: prefix,
 		Major:  major,
 		Minor:  minor,
@@ -99,31 +86,35 @@ func Parse(s string) (*Version, error) {
 	}, nil
 }
 
-func (v *Version) Ints() []int {
+func (v Version) Ints() []int {
 	return []int{v.Major, v.Minor, v.Patch}
 }
 
-func (v *Version) Bump() *Version {
+func (v Version) IsZero() bool {
+	return v.Major == 0 && v.Minor == 0 && v.Patch == 0
+}
+
+func (v Version) Bump() Version {
 	return v.BumpPatch()
 }
 
-func (v *Version) BumpMajor() *Version {
-	return &Version{
+func (v Version) BumpMajor() Version {
+	return Version{
 		Prefix: v.Prefix,
 		Major:  v.Major + 1,
 	}
 }
 
-func (v *Version) BumpMinor() *Version {
-	return &Version{
+func (v Version) BumpMinor() Version {
+	return Version{
 		Prefix: v.Prefix,
 		Major:  v.Major,
 		Minor:  v.Minor + 1,
 	}
 }
 
-func (v *Version) BumpPatch() *Version {
-	return &Version{
+func (v Version) BumpPatch() Version {
+	return Version{
 		Prefix: v.Prefix,
 		Major:  v.Major,
 		Minor:  v.Minor,
@@ -132,12 +123,22 @@ func (v *Version) BumpPatch() *Version {
 }
 
 func (v Version) String() string {
-	s := fmt.Sprintf("%s%d.%d", v.Prefix, v.Major, v.Minor)
-	if v.Patch > 0 {
-		s += fmt.Sprintf(".%d", v.Patch)
-	}
+	s := fmt.Sprintf("%s%d.%d.%d", v.Prefix, v.Major, v.Minor, v.Patch)
 	if v.Extra != "" {
 		s += "-" + v.Extra
 	}
 	return s
+}
+
+type byVersion []Version
+
+func (v byVersion) Len() int      { return len(v) }
+func (v byVersion) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
+func (v byVersion) Less(i, j int) bool {
+	a, b := v[i].Ints(), v[j].Ints()
+
+	return a[0] < b[0] ||
+		a[0] == b[0] && a[1] < b[1] ||
+		a[0] == b[0] && a[1] == b[1] && a[2] < b[2] ||
+		a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && v[i].Extra < v[j].Extra
 }

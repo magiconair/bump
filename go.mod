@@ -1,6 +1,6 @@
-module github.com/magiconair/version
+module github.com/magiconair/bump
 
 require (
-	github.com/magiconair/bump v1.0.0
-	github.com/urfave/cli v0.0.0-20180226030253-8e01ec4cd3e2
+	github.com/pascaldekloe/goe v0.1.0
+	github.com/urfave/cli v1.20.0
 )

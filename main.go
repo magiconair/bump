@@ -1,28 +1,34 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/magiconair/bump/git"
+
 	"github.com/urfave/cli"
 )
 
-var version = "1.1.1"
-
-var errNoVersion = errors.New("no version")
+var version = "1.2.0"
 
 func main() {
 	log.SetFlags(0)
+
+	empty, err := git.IsEmptyRepository()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if empty {
+		log.Fatal("git repository is empty. Please create at least one commit")
+	}
 
 	versions, err := git.Tags()
 	if err != nil {
 		log.Fatal(err)
 	}
 	if len(versions) == 0 {
-		log.Fatal("no versions")
+		versions = append(versions, git.Version{Prefix: "v"})
 	}
 	cur := versions[len(versions)-1]
 
