@@ -8,7 +8,7 @@ them and provides operations on them.
 ## Install
 
 ```
-go get -u github.com/magiconair/bump
+go install github.com/magiconair/bump@latest
 ```
 
 ## Usage
