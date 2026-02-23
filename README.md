@@ -32,13 +32,13 @@ bump next major
 bump next minor
 bump next patch
 
-# tag with the next version number
-bump tag
-
 # tag with the next major/minor/patch version number
 bump tag major
 bump tag minor
 bump tag patch
+
+# tag and push to origin
+bump tag patch --push
 ```
 
 ## Service Tags
