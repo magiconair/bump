@@ -1,16 +1,27 @@
+// Copyright 2026 The Bump Authors. All rights reserved. See LICENSE.
+
 package main
 
 import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
 
 	"github.com/magiconair/bump/git"
 
 	"github.com/urfave/cli"
 )
 
-var version = "1.2.1"
+var version = buildVersion()
+
+func buildVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok || info.Main.Version == "" || info.Main.Version == "(devel)" {
+		return "devel"
+	}
+	return info.Main.Version
+}
 
 func main() {
 	log.SetFlags(0)
@@ -23,19 +34,33 @@ func main() {
 		log.Fatal("git repository is empty. Please create at least one commit")
 	}
 
-	versions, err := git.Tags()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if len(versions) == 0 {
-		versions = append(versions, git.Version{Prefix: "v"})
-	}
-	cur := versions[len(versions)-1]
-
 	app := cli.NewApp()
 	app.HideVersion = true
 	app.HideHelp = true
 	app.Usage = "A tool for managing versions in git tags"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "s, service",
+			Usage: "service prefix for tags (e.g. foo for foo/v1.2.3)",
+		},
+	}
+
+	var versions []git.Version
+	var cur git.Version
+	app.Before = func(c *cli.Context) error {
+		service := c.GlobalString("s")
+		var err error
+		versions, err = git.Tags(service)
+		if err != nil {
+			return err
+		}
+		if len(versions) == 0 {
+			versions = append(versions, git.Version{Service: service, Prefix: "v"})
+		}
+		cur = versions[len(versions)-1]
+		return nil
+	}
+
 	app.Commands = []cli.Command{
 		{
 			Name:  "cur",
