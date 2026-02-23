@@ -23,6 +23,17 @@ func buildVersion() string {
 	return info.Main.Version
 }
 
+func tagAndPush(v git.Version, push bool) error {
+	if err := git.Tag(v); err != nil {
+		return err
+	}
+	log.Print(v)
+	if push {
+		return git.PushTag(v)
+	}
+	return nil
+}
+
 func main() {
 	log.SetFlags(0)
 
@@ -116,50 +127,30 @@ func main() {
 		},
 		{
 			Name:  "tag",
-			Usage: "tag with next version",
-			Action: func(c *cli.Context) error {
-				v := cur.Bump()
-				if err := git.Tag(v); err != nil {
-					log.Fatal(err)
-				}
-				log.Print(v)
-				return nil
-			},
+			Usage: "tag with next major/minor/patch version",
 			Subcommands: []cli.Command{
 				{
 					Name:  "major",
 					Usage: "tag with next major version",
+					Flags: []cli.Flag{cli.BoolFlag{Name: "push", Usage: "push tag to origin"}},
 					Action: func(c *cli.Context) error {
-						v := cur.BumpMajor()
-						if err := git.Tag(v); err != nil {
-							log.Fatal(err)
-						}
-						log.Print(v)
-						return nil
+						return tagAndPush(cur.BumpMajor(), c.Bool("push"))
 					},
 				},
 				{
 					Name:  "minor",
 					Usage: "tag with next minor version",
+					Flags: []cli.Flag{cli.BoolFlag{Name: "push", Usage: "push tag to origin"}},
 					Action: func(c *cli.Context) error {
-						v := cur.BumpMinor()
-						if err := git.Tag(v); err != nil {
-							log.Fatal(err)
-						}
-						log.Print(v)
-						return nil
+						return tagAndPush(cur.BumpMinor(), c.Bool("push"))
 					},
 				},
 				{
 					Name:  "patch",
 					Usage: "tag with next patch version",
+					Flags: []cli.Flag{cli.BoolFlag{Name: "push", Usage: "push tag to origin"}},
 					Action: func(c *cli.Context) error {
-						v := cur.BumpPatch()
-						if err := git.Tag(v); err != nil {
-							log.Fatal(err)
-						}
-						log.Print(v)
-						return nil
+						return tagAndPush(cur.BumpPatch(), c.Bool("push"))
 					},
 				},
 			},

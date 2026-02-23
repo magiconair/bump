@@ -50,3 +50,7 @@ func annotatedTag(v Version) error {
 func signedTag(v Version) error {
 	return exec.Command("git", "tag", "-s", v.String(), "-m", v.String()).Run()
 }
+
+func PushTag(v Version) error {
+	return exec.Command("git", "push", "origin", v.String()).Run()
+}
