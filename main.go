@@ -6,13 +6,22 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
 
 	"github.com/magiconair/bump/git"
 
 	"github.com/urfave/cli"
 )
 
-var version = "1.2.1"
+var version = buildVersion()
+
+func buildVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok || info.Main.Version == "" || info.Main.Version == "(devel)" {
+		return "devel"
+	}
+	return info.Main.Version
+}
 
 func main() {
 	log.SetFlags(0)
