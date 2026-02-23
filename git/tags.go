@@ -14,7 +14,7 @@ func IsEmptyRepository() (bool, error) {
 	return bytes.Contains(out, []byte("count: 0")), nil
 }
 
-func Tags() ([]Version, error) {
+func Tags(service string) ([]Version, error) {
 	var stdout, stderr bytes.Buffer
 	cmd := exec.Command("git", "tag")
 	cmd.Stdout = &stdout
@@ -24,10 +24,10 @@ func Tags() ([]Version, error) {
 	}
 
 	if stderr.Len() > 0 {
-		return nil, fmt.Errorf(stderr.String())
+		return nil, fmt.Errorf("%s", stderr.String())
 	}
 
-	vv, err := Read(&stdout)
+	vv, err := Read(&stdout, service)
 	if err != nil {
 		return nil, err
 	}

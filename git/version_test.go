@@ -21,6 +21,9 @@ func TestParse(t *testing.T) {
 		{"v1.1.0", Version{Prefix: "v", Major: 1, Minor: 1}},
 		{"v1.1.0-foo", Version{Prefix: "v", Major: 1, Minor: 1, Extra: "foo"}},
 		{"v1.1.1-foo", Version{Prefix: "v", Major: 1, Minor: 1, Patch: 1, Extra: "foo"}},
+		{"foo/v1.2.3", Version{Service: "foo", Prefix: "v", Major: 1, Minor: 2, Patch: 3}},
+		{"foo/1.2.3", Version{Service: "foo", Major: 1, Minor: 2, Patch: 3}},
+		{"my-svc/v1.0.0-rc1", Version{Service: "my-svc", Prefix: "v", Major: 1, Extra: "rc1"}},
 	}
 
 	for _, tt := range tests {
@@ -49,12 +52,14 @@ func TestSort(t *testing.T) {
 		{[]string{"1.0.1", "1.0.0"}, []string{"1.0.0", "1.0.1"}},
 		{[]string{"v0.28.0", "v0.9.0"}, []string{"v0.9.0", "v0.28.0"}},
 		{[]string{"v0.24.0", "v0.22.0-test"}, []string{"v0.22.0-test", "v0.24.0"}},
+		{[]string{"bar/v1.0.0", "bar/v2.0.0", "foo/v1.0.0"}, []string{"bar/v1.0.0", "bar/v2.0.0", "foo/v1.0.0"}},
+		{[]string{"foo/v1.0.0", "bar/v2.0.0"}, []string{"bar/v2.0.0", "foo/v1.0.0"}},
 	}
 
 	for _, tt := range tests {
 		name := fmt.Sprintf("%#v", tt.in)
 		t.Run(name, func(t *testing.T) {
-			vv, err := ParseAll(tt.in)
+			vv, err := ParseAll(tt.in, "")
 			if err != nil {
 				t.Fatalf("got error %s want nil", err)
 			}
@@ -70,16 +75,16 @@ func TestSort(t *testing.T) {
 }
 
 func TestBump(t *testing.T) {
-	v := Version{Prefix: "a", Major: 1, Minor: 2, Patch: 3}
+	v := Version{Service: "svc", Prefix: "a", Major: 1, Minor: 2, Patch: 3}
 	tests := []struct {
 		name string
 		got  Version
 		want Version
 	}{
-		{"Bump", v.Bump(), Version{Prefix: "a", Major: 1, Minor: 2, Patch: 4}},
-		{"BumpPatch", v.BumpPatch(), Version{Prefix: "a", Major: 1, Minor: 2, Patch: 4}},
-		{"BumpMinor", v.BumpMinor(), Version{Prefix: "a", Major: 1, Minor: 3, Patch: 0}},
-		{"BumpMajor", v.BumpMajor(), Version{Prefix: "a", Major: 2, Minor: 0, Patch: 0}},
+		{"Bump", v.Bump(), Version{Service: "svc", Prefix: "a", Major: 1, Minor: 2, Patch: 4}},
+		{"BumpPatch", v.BumpPatch(), Version{Service: "svc", Prefix: "a", Major: 1, Minor: 2, Patch: 4}},
+		{"BumpMinor", v.BumpMinor(), Version{Service: "svc", Prefix: "a", Major: 1, Minor: 3, Patch: 0}},
+		{"BumpMajor", v.BumpMajor(), Version{Service: "svc", Prefix: "a", Major: 2, Minor: 0, Patch: 0}},
 	}
 	for _, tt := range tests {
 		verify.Values(t, tt.name, tt.got, tt.want)
