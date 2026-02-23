@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="logo-small.png" alt="BUMP logo" width="300">
+  <img src="logo-small.png" alt="BUMP logo" width="600">
 </p>
 
-# BUMP - A Go Version Nudger
+# BUMP! - Go Version Nudger
 
 `bump` is a tool for managing versions in git tags.
 
