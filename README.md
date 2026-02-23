@@ -59,3 +59,7 @@ bump -s foo next minor
 # tag with the next minor version for service foo
 bump -s foo tag minor
 ```
+
+---
+
+Copyright 2026 The Bump Authors. All rights reserved. See [LICENSE](LICENSE).

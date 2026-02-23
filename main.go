@@ -1,3 +1,5 @@
+// Copyright 2026 The Bump Authors. All rights reserved. See LICENSE.
+
 package main
 
 import (
